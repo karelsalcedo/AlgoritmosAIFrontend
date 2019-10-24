@@ -1,6 +1,7 @@
 import React from 'react';
 import  SelectorAlgoritmo  from './Componets/selectoralgoritmo'
 import  SelectorGrafo from './Componets/selectorgrafo'
+import  Canvas from './Componets/canvas'
 
 
 function App() {
@@ -13,21 +14,17 @@ function App() {
         <SelectorAlgoritmo/>
         <div className="row">
           <div className="col-12">
-            <h4 id="ruta">Ruta: ---</h4>
-            <canvas width='100%' height='400px' className="border border-primary" id="myCanvas">
-            </canvas>
+            <Canvas/>
+          </div>
+        </div>
+        <div className="row mt-2">
+          <div className="col-12">
+            <h3 className="text-center">Nodos Y Aristas</h3>
           </div>
         </div>
         <div className="row">
         <div className="col">
             <SelectorGrafo name="A"/>
-            <SelectorGrafo name="B"/>
-            <SelectorGrafo name="C"/>
-            <SelectorGrafo name="D"/>
-            <SelectorGrafo name="E"/>
-            <SelectorGrafo name="F"/>
-            <SelectorGrafo name="G"/>
-            <SelectorGrafo name="H"/>
           </div>
         </div>
       </div>

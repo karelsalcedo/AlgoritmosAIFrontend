@@ -9,8 +9,99 @@ class selectoralgoritmo extends Component {
        element_1: true,
        element_2: false,
        element_3: false,
+       grafo: [],
+       nodos_circulos:{
+        '1': {
+          'x': 150,
+          'y': 200,
+          'lx': 110,
+          'ly': 180
+        },
+        '2':{
+          'x': 300,
+          'y': 100,
+          'lx': 260,
+          'ly': 80
+        },
+        '3':{
+          'x': 300,
+          'y': 300,
+          'lx': 260,
+          'ly': 280
+        },
+        '4':{
+          'x': 500,
+          'y': 100,
+          'lx': 460,
+          'ly': 80
+        },
+        '5':{
+          'x': 500,
+          'y': 300,
+          'lx': 460,
+          'ly': 280
+        },
+        '6':{
+          'x': 700,
+          'y': 100,
+          'lx': 660,
+          'ly': 80
+        },
+        '7':{
+          'x': 700,
+          'y': 300,
+          'lx': 660,
+          'ly': 280
+        },
+        '8':{
+          'x': 850,
+          'y': 200,
+          'lx': 810,
+          'ly': 180
+        }
+       },
+       puntos_nodos: {
+        '1': {
+          'x': 150,
+          'y': 170
+        },
+        '2':{
+          'x': 270,
+          'y': 100
+        },
+        '3':{
+          'x': 270,
+          'y': 240
+        },
+        '4':{
+          'x': 470,
+          'y': 100
+        },
+        '5':{
+          'x': 470,
+          'y': 240
+        },
+        '6':{
+          'x': 670,
+          'y': 100
+        },
+        '7':{
+          'x': 670,
+          'y': 240
+        },
+        '8':{
+          'x': 790,
+          'y': 170
+        }
+      }
       }
   }
+
+
+  componentDidMount() {
+    this.drawGrafo()
+  }
+
   _handleChange = (event) => {
     if(event.target.value === 'dijkstra'){
       this.setState( {
@@ -65,6 +156,7 @@ class selectoralgoritmo extends Component {
   sendService(formData){
     const URL = 'http://localhost:8000/getData'
     const ruta = document.getElementById('ruta')
+    let canvas = document.getElementById("myCanvas"); 
     const headers = {
       'Content-Type': 'application/json',
     }
@@ -72,13 +164,20 @@ class selectoralgoritmo extends Component {
       headers: headers
     }
     )
-    .then(function (response) {
-      console.log(response);
+    .then( (response)=> {
       var ruta_final  = ''
-      response.data.ruta.forEach(element => {
-        ruta_final += element + '->'
+      response.data.ruta[0].forEach(element => {
+        ruta_final += element + ' '
       });
       ruta.innerHTML = 'Ruta: ' + ruta_final.toUpperCase()
+      for (let index = 0; index < response.data.ruta[0].length; index++) {
+        if(index + 1  != response.data.ruta[0].length){
+        this.linea_resultado(canvas, this.state.puntos_nodos[response.data.ruta[0][index]].x,
+                                     this.state.puntos_nodos[response.data.ruta[0][index]].y,
+                                     this.state.puntos_nodos[response.data.ruta[0][index+1]].x,
+                                     this.state.puntos_nodos[response.data.ruta[0][index+1]].y)
+                                    }
+      }
     })
     .catch(function (error) {
       alert('Error:' + error)
@@ -86,27 +185,28 @@ class selectoralgoritmo extends Component {
 
   }
 
-  drawGrafo(){
-    var c = document.getElementById("myCanvas");
-    
-    this.circle(c,225, 225, 20)
-    this.linea(c,25, 25, 35, 35)
-    this.circle(c,45, 45, 10)
-    this.circle(c,65, 65, 10)
-    this.circle(c,105, 105, 10)
-    this.circle(c,115, 115, 10)
-    this.circle(c,135, 145, 10)
-    this.circle(c,205, 165, 10)
-    this.circle(c,215, 205, 10)
-  }
-
   circle(canvas,x,y,r,arc0=0,arc1=2 * Math.PI) {
     let ctx = canvas.getContext("2d");
-    
     ctx.lineWidth = 5;
     ctx.beginPath();
     ctx.arc(x-r, y-r, r, arc0, arc1);
     ctx.stroke();
+  }
+
+  text(canvas, x, y, letra){
+    var ctx = canvas.getContext("2d");
+    ctx.font = "30px Arial";
+    ctx.fillText(letra, x, y);
+  }
+
+  linea_resultado (canvas, x0, y0, x1, y1){
+    let ctx = canvas.getContext("2d");
+    ctx.beginPath();
+    ctx.lineCap = "round";
+    ctx.strokeStyle = '#FF0000';
+    ctx.moveTo(x0, y0);
+    ctx.lineTo(x1, y1);
+    ctx.stroke()
   }
 
   linea(canvas,x0,y0,x1,y1){
@@ -116,6 +216,34 @@ class selectoralgoritmo extends Component {
     ctx.moveTo(x0, y0);
     ctx.lineTo(x1, y1);
     ctx.stroke()
+  }
+
+
+  drawGrafo(){
+    let c = document.getElementById("myCanvas");
+    let listItems
+    fetch('http://localhost:8000/getGraph')
+    .then(function(response) {
+      return response.json();
+    })
+    .then((myJson)=> {
+      if(myJson.status == '100'){
+        this.setState({
+          grafo: myJson.nodos
+        });
+        for (let n = 0; n < myJson.nodos.length; n++) {
+        //Dibuja el nodo:
+        var c_n = n + 1;
+        this.circle(c,this.state.nodos_circulos[c_n].x, this.state.nodos_circulos[c_n].y, 30)
+        this.text(c,this.state.nodos_circulos[c_n].lx, this.state.nodos_circulos[c_n].ly, c_n)
+        }
+        //Dibuja linea:
+        for(let m = 0; m < myJson.aristas.length; m++){
+          //var c_m = m + 1;
+          this.linea(c, this.state.puntos_nodos[parseInt(myJson.aristas[m][0])].x, this.state.puntos_nodos[parseInt(myJson.aristas[m][0])].y, this.state.puntos_nodos[parseInt(myJson.aristas[m][1])].x, this.state.puntos_nodos[parseInt(myJson.aristas[m][1])].y)
+        }
+      }
+    });
   }
 
   render() {
@@ -134,25 +262,15 @@ class selectoralgoritmo extends Component {
         </select>
         <label>Nodo de inicio:</label>
         <select disabled = {(this.state.element_2)? "disabled" : ""} className="form-control mr-1" id="inicio">
-            <option>a</option>
-            <option>b</option>
-            <option>c</option>
-            <option>d</option>
-            <option>e</option>
-            <option>f</option>
-            <option>g</option>
-            <option>h</option>
+        {this.state.grafo.map((number) =>
+          <option>{number}</option>
+        )}
         </select>
         <label for="exampleFormControlSelect1">Nodo final:</label>
         <select disabled = {(this.state.element_3)? "disabled" : ""} className="form-control mr-1" id="final">
-            <option>a</option>
-            <option>b</option>
-            <option>c</option>
-            <option>d</option>
-            <option>e</option>
-            <option>f</option>
-            <option>g</option>
-            <option>h</option>
+        {this.state.grafo.map((number) =>
+          <option>{number}</option>
+        )}
         </select>
         <button type="button" className="btn btn-success ml-1 col-1" onClick = {this.handleClik.bind(this)}>Ejecutar</button>
         </div>
