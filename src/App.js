@@ -17,11 +17,6 @@ function App() {
             <Canvas/>
           </div>
         </div>
-        <div className="row mt-2">
-          <div className="col-12">
-            <h3 className="text-center">Nodos Y Aristas</h3>
-          </div>
-        </div>
         <div className="row">
         <div className="col">
             <SelectorGrafo name="A"/>

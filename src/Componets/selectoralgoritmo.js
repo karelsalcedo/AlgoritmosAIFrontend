@@ -103,21 +103,21 @@ class selectoralgoritmo extends Component {
   }
 
   _handleChange = (event) => {
-    if(event.target.value === 'dijkstra'){
+    if(event.target.value == 'dijkstra'){
       this.setState( {
         element_1: true,
         element_2: false,
         element_3: false,
       } )
     }
-    else if(event.target.value === 'prim'){
+    else if(event.target.value == 'prim'){
       this.setState( {
         element_1: true,
         element_2: false,
         element_3: true,
       } )
     }
-    else if(event.target.value === 'kruskal'){
+    else if(event.target.value == 'kruskal'){
       this.setState( {
         element_1: false,
         element_2: true,
@@ -233,14 +233,20 @@ class selectoralgoritmo extends Component {
         });
         for (let n = 0; n < myJson.nodos.length; n++) {
         //Dibuja el nodo:
+        
         var c_n = n + 1;
-        this.circle(c,this.state.nodos_circulos[c_n].x, this.state.nodos_circulos[c_n].y, 30)
-        this.text(c,this.state.nodos_circulos[c_n].lx, this.state.nodos_circulos[c_n].ly, c_n)
+        this.circle(c,this.state.nodos_circulos[parseInt(myJson.nodos[n])].x, this.state.nodos_circulos[parseInt(myJson.nodos[n])].y, 30)
+        this.text(c,this.state.nodos_circulos[parseInt(myJson.nodos[n])].lx, this.state.nodos_circulos[parseInt(myJson.nodos[n])].ly, myJson.nodos[n])
         }
         //Dibuja linea:
         for(let m = 0; m < myJson.aristas.length; m++){
           //var c_m = m + 1;
-          this.linea(c, this.state.puntos_nodos[parseInt(myJson.aristas[m][0])].x, this.state.puntos_nodos[parseInt(myJson.aristas[m][0])].y, this.state.puntos_nodos[parseInt(myJson.aristas[m][1])].x, this.state.puntos_nodos[parseInt(myJson.aristas[m][1])].y)
+          if(myJson.aristas[m][0] != 0){
+          this.linea(c, this.state.puntos_nodos[parseInt(myJson.aristas[m][0])].x,
+           this.state.puntos_nodos[parseInt(myJson.aristas[m][0])].y,
+            this.state.puntos_nodos[parseInt(myJson.aristas[m][1])].x,
+             this.state.puntos_nodos[parseInt(myJson.aristas[m][1])].y)
+            }
         }
       }
     });
